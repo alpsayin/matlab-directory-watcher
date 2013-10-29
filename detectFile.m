@@ -1,5 +1,5 @@
-function timerObj = detectFile(dirName, actionToBeTaken, newFilesOnly, period)
-% function timerObj = detectFile(dirName, actionToBeTaken)
+function timerObj = detectFile(dirName, actionToBeTaken, newFilesOnly, periodMs)
+% function timerObj = detectFile(dirName, actionToBeTaken, newFilesOnly, periodMs)
 %
 % dirName is the name for the directory to be watched for changes
 % All file names which has been modified after the first run will
@@ -16,11 +16,11 @@ if nargin < 3
 end
 
 if nargin < 4
-    period = 15;
+    periodMs = 15;
 end
 
 
-timerObj = timer('TimerFcn', {@timerCallback, dirName, actionToBeTaken, newFilesOnly}, 'Period', period, 'executionmode', 'fixedrate');
+timerObj = timer('TimerFcn', {@timerCallback, dirName, actionToBeTaken, newFilesOnly}, 'Period', periodMs, 'executionmode', 'fixedrate');
 start(timerObj)
 return 
 

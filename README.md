@@ -5,7 +5,7 @@ A simple function that periodically checks a folder for changes and runs a funct
 
 I wouldn't recommend it for folders with lots of files though.
 
-function timerObj = detectFile(dirName, actionToBeTaken, newFilesOnly, period)
+function timerObj = detectFile(dirName, actionToBeTaken, newFilesOnly, periodMs)
  
   dirName is the name for the directory to be watched for changes
   All file names which has been modified after the first run will

@@ -1,4 +1,4 @@
-function timerObj = detectFile(dirName, actionToBeTaken)
+function timerObj = detectFile(dirName, actionToBeTaken, newFilesOnly, period)
 % function timerObj = detectFile(dirName, actionToBeTaken)
 %
 % dirName is the name for the directory to be watched for changes
@@ -11,15 +11,20 @@ function timerObj = detectFile(dirName, actionToBeTaken)
 % Alp Sayin - alpsayin[at]alpsayin[dot]com
 % 29 Oct 2013
 
+if nargin < 3
+    newFilesOnly = false;
+end
 
-period = 10; %seconds between directory checks
-timeout = 500; %seconds before function termination
+if nargin < 4
+    period = 15;
+end
 
-timerObj = timer('TimerFcn', {@timerCallback, dirName, actionToBeTaken}, 'Period', period,'TaskstoExecute', uint8(timeout/period), 'executionmode', 'fixedrate');
+
+timerObj = timer('TimerFcn', {@timerCallback, dirName, actionToBeTaken, newFilesOnly}, 'Period', period, 'executionmode', 'fixedrate');
 start(timerObj)
 return 
 
-function timerCallback(src, eventdata, dirName, actionToBeTaken)
+function timerCallback(src, eventdata, dirName, actionToBeTaken, newFilesOnly)
     persistent prs_lastRunTime;
     persistent prs_beginFlag;
 
@@ -32,13 +37,15 @@ function timerCallback(src, eventdata, dirName, actionToBeTaken)
     end
     
     myDir = dir(dirName);
-    for k=1:length(myDir)
-        file = myDir(k);
-        fileTime = file.datenum;
-        if (~strcmp(file.name, '.')) & (fileTime > prs_lastRunTime)
-            fprintf('%s has changed\n', file.name);
-            actionToBeTaken(file.name);
-    %         DO STUFF HERE
+    if (myDir(1).datenum > prs_lastRunTime) || (~newFilesOnly) % This checks if '.' folder is changed before going into a thorough search
+        for k=1:length(myDir)
+            file = myDir(k);
+            fileTime = file.datenum;
+            if (~strncmp(file.name, '.', 1)) && ~isempty(fileTime) && (fileTime > prs_lastRunTime)
+                fprintf('%s has changed\n', file.name);
+                actionToBeTaken(file.name);
+        %         DO STUFF HERE
+            end
         end
     end
 
